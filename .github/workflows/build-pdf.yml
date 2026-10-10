@@ -23,60 +23,62 @@ jobs:
           sudo apt-get install -y \
             pandoc \
             texlive-xetex \
-            texlive-fonts-recommended \
             texlive-latex-extra \
+            fonts-dejavu \
             python3
+
+      - name: Verify required files exist
+        run: |
+          echo "Checking files..."
+          test -f src/frontmatter/00-front.md || (echo "MISSING: src/frontmatter/00-front.md" && exit 1)
+          test -f templates/header.tex || (echo "MISSING: templates/header.tex" && exit 1)
+          ls -la src/volume-1-linux-core/*.md
+          echo "All required files present"
 
       - name: Strip YAML frontmatter from entries
         run: |
           mkdir -p build
           python3 - << 'PYEOF'
           import os, glob
-
           src_dir = 'src/volume-1-linux-core'
           out_dir = 'build'
           os.makedirs(out_dir, exist_ok=True)
-
           for path in sorted(glob.glob(f'{src_dir}/*.md')):
               with open(path, 'r', encoding='utf-8') as fp:
                   content = fp.read()
-
-              # Strip YAML frontmatter (--- ... ---)
               if content.startswith('---'):
                   parts = content.split('---', 2)
                   if len(parts) >= 3:
                       content = parts[2].lstrip('\n')
-
               name = os.path.basename(path)
               with open(f'{out_dir}/{name}', 'w', encoding='utf-8') as fp:
                   fp.write(content)
-
           print(f'Processed {len(os.listdir(out_dir))} files')
           PYEOF
 
       - name: Build PDF from entries
         run: |
           mkdir -p output
-          pandoc build/*.md \
-            --from markdown-yaml_metadata_block \
+          pandoc \
+            src/frontmatter/00-front.md \
+            build/*.md \
+            --from markdown \
             --to pdf \
             --pdf-engine=xelatex \
             --toc \
-            --toc-depth=2 \
-            --number-sections=false \
+            --toc-depth=1 \
             --highlight-style=tango \
             --wrap=preserve \
+            --include-in-header=templates/header.tex \
             -V geometry:a4paper \
             -V geometry:margin=2cm \
             -V fontsize=10pt \
             -V linestretch=1.15 \
             -V mainfont="DejaVu Serif" \
             -V monofont="DejaVu Sans Mono" \
-            -V sansfont="DejaVu Sans" \
-            -V lang=en \
             -V colorlinks=true \
-            -V linkcolor=blue \
-            -V urlcolor=blue \
+            -V linkcolor=ccsrAccent \
+            -V urlcolor=ccsrAccent \
             --metadata title="The Cybersecurity Command Reference" \
             --metadata subtitle="Authorized Operator Edition — Volume I" \
             --metadata author="Ali Hazim" \

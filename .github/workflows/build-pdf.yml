@@ -1,0 +1,55 @@
+name: Build PDF
+
+on:
+  push:
+    branches: [main]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Pandoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc texlive-xetex texlive-fonts-recommended
+
+      - name: Build PDF from entries
+        run: |
+          mkdir -p output
+          pandoc \
+            src/volume-1-linux-core/*.md \
+            --from markdown \
+            --to pdf \
+            --pdf-engine=xelatex \
+            --toc \
+            --toc-depth=2 \
+            -V geometry:a4paper \
+            -V geometry:margin=2cm \
+            -V fontsize=10pt \
+            -V mainfont="DejaVu Serif" \
+            -V monofont="DejaVu Sans Mono" \
+            --metadata title="The Cybersecurity Command Reference" \
+            --metadata author="Ali Hazim" \
+            --metadata date="2026" \
+            -o output/ccsr-v1.0.0.pdf
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ccsr-v1.0.0-pdf
+          path: output/ccsr-v1.0.0.pdf
+
+      - name: Attach PDF to release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: output/ccsr-v1.0.0.pdf

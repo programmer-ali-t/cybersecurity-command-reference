@@ -24,6 +24,7 @@ contact:
     website: "https://t.me/KaliLinux_Arabic"
 version: "1.0.0"
 date-released: "2026-10-10"
+doi: "10.5281/zenodo.23279844"
 license: "CC-BY-NC-SA-4.0"
 type: book
 language: en
@@ -38,4 +39,4 @@ keywords:
   - sigma rules
   - kali linux
 repository-code: "https://github.com/programmer-ali-t/cybersecurity-command-reference"
-url: "https://github.com/programmer-ali-t/cybersecurity-command-reference"
+url: "https://doi.org/10.5281/zenodo.23279844"

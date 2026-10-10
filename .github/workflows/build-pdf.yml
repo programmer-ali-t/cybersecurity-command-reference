@@ -28,12 +28,6 @@ jobs:
             fonts-dejavu \
             python3
 
-      - name: Verify required files exist
-        run: |
-          test -f src/frontmatter/00-front.md || (echo "MISSING: src/frontmatter/00-front.md" && exit 1)
-          test -f templates/header.tex || (echo "MISSING: templates/header.tex" && exit 1)
-          echo "All required files present"
-
       - name: Preprocess markdown
         run: |
           mkdir -p build
@@ -44,31 +38,61 @@ jobs:
           out_dir = 'build'
           os.makedirs(out_dir, exist_ok=True)
 
-          def normalize_tables(text):
-              """Ensure every table pipe is surrounded by spaces so
-              Pandoc's GFM reader recognizes the table."""
+          def fix_tables(text):
+              """Convert broken pipe tables to clean pipe tables."""
               lines = text.split('\n')
               out = []
               in_code = False
-              for line in lines:
-                  stripped = line.strip()
-                  if stripped.startswith('```'):
+              i = 0
+              while i < len(lines):
+                  line = lines[i]
+                  s = line.strip()
+
+                  # Track code fences
+                  if s.startswith('```'):
                       in_code = not in_code
                       out.append(line)
+                      i += 1
                       continue
+
                   if in_code:
                       out.append(line)
+                      i += 1
                       continue
-                  if stripped.startswith('|') and stripped.endswith('|') and len(stripped) > 2:
-                      # Normalize pipe spacing
-                      inner = stripped.strip('|')
-                      cells = [c.strip() for c in inner.split('|')]
-                      line = '| ' + ' | '.join(cells) + ' |'
-                      # Ensure separator rows have at least 3 dashes
-                      if all(re.fullmatch(r':?-{0,}:?', c) for c in cells if c):
-                          cells = [(':' if c.startswith(':') else '') + '-' * max(3, len(c)) + (':' if c.endswith(':') else '') for c in cells]
-                          line = '| ' + ' | '.join(cells) + ' |'
+
+                  # Detect a pipe table
+                  if s.startswith('|') and s.endswith('|') and s.count('|') >= 3:
+                      # Collect the whole table
+                      table_lines = []
+                      while i < len(lines) and lines[i].strip().startswith('|') and lines[i].strip().endswith('|'):
+                          table_lines.append(lines[i])
+                          i += 1
+
+                      # Normalize spacing on pipes
+                      cleaned = []
+                      for tl in table_lines:
+                          cells = [c.strip() for c in tl.strip().strip('|').split('|')]
+                          cleaned.append('| ' + ' | '.join(cells) + ' |')
+
+                      # Ensure there's a separator row (line 2). If not, insert one.
+                      if len(cleaned) >= 2:
+                          sep_test = cleaned[1].strip('| ').replace(' ', '')
+                          if not re.fullmatch(r'[:\-]+', sep_test):
+                              # Insert a separator after header
+                              ncols = cleaned[0].count('|') - 1
+                              cleaned.insert(1, '| ' + ' | '.join(['---'] * ncols) + ' |')
+                          else:
+                              # Ensure separator has 3+ dashes per cell
+                              cells = [c.strip() for c in cleaned[1].strip('|').split('|')]
+                              cells = [(':' if c.startswith(':') else '') + '-' * max(3, len(c.replace(':', ''))) + (':' if c.endswith(':') else '') for c in cells]
+                              cleaned[1] = '| ' + ' | '.join(cells) + ' |'
+
+                      out.extend(cleaned)
+                      continue
+
                   out.append(line)
+                  i += 1
+
               return '\n'.join(out)
 
           def strip_frontmatter(content):
@@ -78,23 +102,25 @@ jobs:
                       return parts[2].lstrip('\n')
               return content
 
-          for path in sorted(glob.glob(f'{src_dir}/*.md')):
-              with open(path, 'r', encoding='utf-8') as fp:
-                  content = fp.read()
-              content = strip_frontmatter(content)
-              content = normalize_tables(content)
-              name = os.path.basename(path)
-              with open(f'{out_dir}/{name}', 'w', encoding='utf-8') as fp:
-                  fp.write(content)
-
-          # Also preprocess the front matter file
+          # Process front matter — convert \newpage to markdown page break
           fm_src = 'src/frontmatter/00-front.md'
           if os.path.exists(fm_src):
               with open(fm_src, 'r', encoding='utf-8') as fp:
                   content = fp.read()
               content = strip_frontmatter(content)
-              content = normalize_tables(content)
+              # Replace \newpage with a raw LaTeX page break that pandoc passes through
+              content = content.replace('\\newpage', '\n\\newpage\n')
               with open('build/00-front.md', 'w', encoding='utf-8') as fp:
+                  fp.write(content)
+
+          # Process entries
+          for path in sorted(glob.glob(f'{src_dir}/*.md')):
+              with open(path, 'r', encoding='utf-8') as fp:
+                  content = fp.read()
+              content = strip_frontmatter(content)
+              content = fix_tables(content)
+              name = os.path.basename(path)
+              with open(f'{out_dir}/{name}', 'w', encoding='utf-8') as fp:
                   fp.write(content)
 
           print(f'Preprocessed {len(glob.glob(f"{out_dir}/*.md"))} files')
@@ -115,8 +141,8 @@ jobs:
             build/008-wc.md \
             build/009-cut.md \
             build/010-sort.md \
-            --from gfm \
-            --to pdf \
+            --from markdown+pipe_tables+raw_tex+raw_html+backtick_code_blocks+fenced_code_blocks+header_attributes+auto_identifiers+footnotes+definition_lists+smart \
+            --to latex \
             --pdf-engine=xelatex \
             --toc \
             --toc-depth=1 \

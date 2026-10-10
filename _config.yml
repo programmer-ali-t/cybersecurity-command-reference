@@ -1,0 +1,37 @@
+title: The Cybersecurity Command Reference
+description: Authorized Operator Edition — Volume I: Linux Core Operations
+author: Ali Hazim
+
+theme: jekyll-theme-cayman
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    css_class: 'highlight'
+
+plugins:
+  - jekyll-relative-links
+  - jekyll-seo-tag
+
+relative_links:
+  enabled: true
+  collections: true
+
+include:
+  - "_config.yml"
+
+exclude:
+  - build/
+  - output/
+  - tools/
+  - reviews/
+  - .github/
+  - templates/
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default

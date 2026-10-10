@@ -116,7 +116,7 @@ Change: 2025-12-01 12:00:00.000000000 +0000
 - `Modify` (mtime) — last content change; what most people mean by "file time".
 - `Change` (ctime) — last inode metadata change (permissions, ownership, link count). Not "creation".
 - `Birth` (btime) — creation time; not present on all filesystems.
-- `Links: 1` — link count; >1 indicates hard links.
+- `Links: 1` — link count; greater than 1 indicates hard links.
 
 **Common misreadings.**
 
@@ -143,7 +143,7 @@ Change: 2025-12-01 12:00:00.000000000 +0000
 
 **Recovery path.** Not applicable.
 
-**Performance impact.** One `statx` syscall per file. On local SSD ~5 µs. On NFS ~5 ms. Bulk `stat` over NFS is expensive.
+**Performance impact.** One `statx` syscall per file. On local SSD ~5 microseconds. On NFS ~5 ms. Bulk `stat` over NFS is expensive.
 
 ## SECURITY
 

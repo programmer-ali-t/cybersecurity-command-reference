@@ -1,42 +1,15 @@
 % ============================================================
-% CCSR LaTeX Header — Colored Edition
+% CCSR LaTeX Header — Colors, Links, Headers
 % ============================================================
 
+% Colors
 \usepackage{xcolor}
+\definecolor{ccsrAccent}{HTML}{0E7490}
+\definecolor{ccsrSlate}{HTML}{475569}
+\definecolor{ccsrRule}{HTML}{CBD5E1}
 
-% -------- CCSR Palette --------
-\definecolor{ccsrAccent}{HTML}{0E7490}   % teal dark
-\definecolor{ccsrInk}{HTML}{0F172A}      % near-black
-\definecolor{ccsrSlate}{HTML}{475569}    % muted gray
-\definecolor{ccsrRule}{HTML}{CBD5E1}     % separator
-\definecolor{ccsrCaution}{HTML}{B45309}  % amber
-\definecolor{ccsrSafe}{HTML}{15803D}     % green
-\definecolor{ccsrDanger}{HTML}{B91C1C}   % red
-\definecolor{ccsrCodeBg}{HTML}{F8FAFC}   % code block background
-\definecolor{ccsrCodeBorder}{HTML}{94A3B8}
-
-% -------- Section heading colors --------
-\usepackage{sectsty}
-\sectionfont{\color{ccsrAccent}\sffamily}
-\subsectionfont{\color{ccsrSlate}\sffamily\bfseries}
-\subsubsectionfont{\color{ccsrInk}\sffamily\bfseries}
-
-% -------- Running headers --------
-\usepackage{fancyhdr}
-\pagestyle{fancy}
-\fancyhf{}
-\fancyhead[L]{\footnotesize\color{ccsrSlate}\sffamily CCSR-V1-2026-001}
-\fancyhead[R]{\footnotesize\color{ccsrSlate}\sffamily Ali Hazim}
-\fancyfoot[C]{\footnotesize\color{ccsrSlate}\sffamily\thepage}
-\renewcommand{\headrulewidth}{0.4pt}
-\renewcommand{\headrule}{\color{ccsrRule}\hrule width\headwidth height\headrulewidth}
-
-% -------- Inline code style --------
-\usepackage{fancyvrb}
-\let\oldtexttt\texttt
-\renewcommand{\texttt}[1]{\colorbox{ccsrCodeBg}{\oldtexttt{\color{ccsrInk}#1}}}
-
-% -------- Links --------
+% Hyperlinks — explicit load so \hypersetup works
+\usepackage{hyperref}
 \hypersetup{
   colorlinks=true,
   linkcolor=ccsrAccent,
@@ -44,10 +17,21 @@
   citecolor=ccsrAccent
 }
 
-% -------- Lists spacing --------
+% Section heading colors
+\usepackage{sectsty}
+\sectionfont{\color{ccsrAccent}}
+\subsectionfont{\color{ccsrSlate}\bfseries}
+
+% Running headers
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize\color{ccsrSlate}CCSR-V1-2026-001}
+\fancyhead[R]{\footnotesize\color{ccsrSlate}Ali Hazim}
+\fancyfoot[C]{\footnotesize\color{ccsrSlate}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Lists
 \usepackage{enumitem}
 \setlist[itemize]{leftmargin=*, itemsep=2pt, topsep=4pt}
 \setlist[enumerate]{leftmargin=*, itemsep=2pt, topsep=4pt}
-
-% -------- Table styling --------
-\renewcommand{\arraystretch}{1.25}

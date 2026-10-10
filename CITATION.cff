@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "If you use this reference, please cite it using the metadata below."
+title: "The Cybersecurity Command Reference — Authorized Operator Edition"
+abstract: >
+  A methodology-verified reference of Linux commands used by
+  security operators. Each entry documents function, canonical
+  syntax, curated options, worked examples with expected output,
+  interpretation guidance, operational cautions, MITRE ATT&CK
+  mapping, and detection signals. Verified against Ubuntu 22.04,
+  Rocky Linux 9.3, and Arch Linux 2024.01.
+authors:
+  - family-names: "Hazim"
+    given-names: "Ali"
+    alias: "SRB_X"
+    orcid: "https://orcid.org/0009-0005-1429-9415"
+    affiliation: "Independent Researcher"
+    address: "Iraq"
+version: "1.0.0"
+date-released: "2026-10-10"
+license: "CC-BY-NC-SA-4.0"
+keywords:
+  - cybersecurity
+  - linux
+  - command reference
+  - incident response
+  - forensics
+  - mitre att&ck
+  - detection engineering
+  - sigma rules
+repository-code: "https://github.com/programmer-ali-t/cybersecurity-command-reference"
+url: "https://github.com/programmer-ali-t/cybersecurity-command-reference"
+type: book
+language: en

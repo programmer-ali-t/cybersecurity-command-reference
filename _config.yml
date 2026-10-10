@@ -1,8 +1,8 @@
-title: The Cybersecurity Command Reference
-description: Authorized Operator Edition — Volume I: Linux Core Operations
-author: Ali Hazim
+title: "The Cybersecurity Command Reference"
+description: "Authorized Operator Edition - Volume I: Linux Core Operations"
+author: "Ali Hazim"
 
-theme: jekyll-theme-cayman
+theme: "jekyll-theme-cayman"
 
 markdown: kramdown
 kramdown:

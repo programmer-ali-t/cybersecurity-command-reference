@@ -3,6 +3,7 @@
 **Authorized Operator Edition — Volume I: Linux Core Operations**
 
 [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](CHANGELOG.md)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.23279844-blue.svg)](https://doi.org/10.5281/zenodo.23279844)
 [![License](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-lightgrey.svg)](LICENSE)
 [![ORCID](https://img.shields.io/badge/ORCID-0009--0005--1429--9415-green.svg)](https://orcid.org/0009-0005-1429-9415)
 [![Channel](https://img.shields.io/badge/Telegram-KaliLinux__Arabic-blue.svg)](https://t.me/KaliLinux_Arabic)
@@ -10,7 +11,7 @@
 📡 **Publishing Channel:** [t.me/KaliLinux_Arabic](https://t.me/KaliLinux_Arabic)
 
 **Author:** Ali Hazim · **Document ID:** CCSR-V1-2026-001
-**Status:** v1.0.0 — Self-Verified (see [VERIFICATION.md](VERIFICATION.md))
+**Status:** v1.0.0 — Self-Verified · **DOI:** [10.5281/zenodo.23279844](https://doi.org/10.5281/zenodo.23279844)
 
 ---
 
@@ -57,7 +58,7 @@ Every entry carries a `version-verified` field naming the tool version and test 
 ├── ERRATA.md
 ├── VERIFICATION.md
 ├── GOVERNANCE.md
-├── CONTRIBUTING.md          (coming)
+├── CONTRIBUTING.md
 ├── templates/
 │   └── entry-template.md
 ├── src/
@@ -92,6 +93,15 @@ Every entry carries a `version-verified` field naming the tool version and test 
 | III | Windows / PowerShell SecOps | 0 of 20 | Planned |
 | IV | Forensics & Incident Response | 0 of 25 | Planned |
 
+## Roadmap
+
+| Version | Target | Contents |
+|---------|--------|----------|
+| **v1.0.0** | 2026-10-10 | 10 entries (this release) |
+| v1.1.0 | ~30 days | 20 entries |
+| v1.2.0 | ~60 days | 30 entries |
+| v2.0.0 | ~6 months | Volume I complete + Volume II started |
+
 ## Versioning
 
 Semantic versioning (`MAJOR.MINOR.PATCH`). See [CHANGELOG.md](CHANGELOG.md).
@@ -114,16 +124,17 @@ Corrections, additions, and reviews are welcome. Reviewers who sign a Review Rec
                Linux Core Operations},
   year      = {2026},
   version   = {1.0.0},
-  publisher = {Independent},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.23279844},
   orcid     = {0009-0005-1429-9415},
-  url       = {https://github.com/programmer-ali-t/cybersecurity-command-reference},
+  url       = {https://doi.org/10.5281/zenodo.23279844},
   note      = {Document ID: CCSR-V1-2026-001}
 }
 ```
 
 APA:
 
-> Hazim, A. (2026). *The Cybersecurity Command Reference — Authorized Operator Edition: Volume I — Linux Core Operations* (Version 1.0.0) [Book]. Independent. https://github.com/programmer-ali-t/cybersecurity-command-reference
+> Hazim, A. (2026). *The Cybersecurity Command Reference — Authorized Operator Edition: Volume I — Linux Core Operations* (Version 1.0.0) [Book]. Zenodo. https://doi.org/10.5281/zenodo.23279844
 
 See [CITATION.cff](CITATION.cff) for machine-readable metadata.
 
@@ -137,6 +148,7 @@ See [CITATION.cff](CITATION.cff) for machine-readable metadata.
 | Personal Telegram | [@SRB_X](https://t.me/SRB_X) |
 | **Publishing Channel** | **[t.me/KaliLinux_Arabic](https://t.me/KaliLinux_Arabic)** |
 | GitHub | [programmer-ali-t](https://github.com/programmer-ali-t) |
+| DOI | [10.5281/zenodo.23279844](https://doi.org/10.5281/zenodo.23279844) |
 
 ## Publishing Channel
 
@@ -162,4 +174,5 @@ You may share and adapt for non-commercial purposes with attribution and under t
 ---
 
 **Document ID:** CCSR-V1-2026-001
+**DOI:** [10.5281/zenodo.23279844](https://doi.org/10.5281/zenodo.23279844)
 **Contact:** [@SRB_X](https://t.me/SRB_X) · **Channel:** [t.me/KaliLinux_Arabic](https://t.me/KaliLinux_Arabic)

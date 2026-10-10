@@ -2,7 +2,7 @@
 title: "The Cybersecurity Command Reference"
 subtitle: "Authorized Operator Edition — Volume I: Linux Core Operations"
 author: "Ali Hazim"
-date: "v1.0.0 — 2026"
+date: 2026-10-10
 ---
 
 \newpage

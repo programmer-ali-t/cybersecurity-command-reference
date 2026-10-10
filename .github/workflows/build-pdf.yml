@@ -17,29 +17,70 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Pandoc
+      - name: Install system packages
         run: |
           sudo apt-get update
-          sudo apt-get install -y pandoc texlive-xetex texlive-fonts-recommended
+          sudo apt-get install -y \
+            pandoc \
+            texlive-xetex \
+            texlive-fonts-recommended \
+            texlive-latex-extra \
+            python3
+
+      - name: Strip YAML frontmatter from entries
+        run: |
+          mkdir -p build
+          python3 - << 'PYEOF'
+          import os, glob
+
+          src_dir = 'src/volume-1-linux-core'
+          out_dir = 'build'
+          os.makedirs(out_dir, exist_ok=True)
+
+          for path in sorted(glob.glob(f'{src_dir}/*.md')):
+              with open(path, 'r', encoding='utf-8') as fp:
+                  content = fp.read()
+
+              # Strip YAML frontmatter (--- ... ---)
+              if content.startswith('---'):
+                  parts = content.split('---', 2)
+                  if len(parts) >= 3:
+                      content = parts[2].lstrip('\n')
+
+              name = os.path.basename(path)
+              with open(f'{out_dir}/{name}', 'w', encoding='utf-8') as fp:
+                  fp.write(content)
+
+          print(f'Processed {len(os.listdir(out_dir))} files')
+          PYEOF
 
       - name: Build PDF from entries
         run: |
           mkdir -p output
-          pandoc \
-            src/volume-1-linux-core/*.md \
-            --from markdown \
+          pandoc build/*.md \
+            --from markdown-yaml_metadata_block \
             --to pdf \
             --pdf-engine=xelatex \
             --toc \
             --toc-depth=2 \
+            --number-sections=false \
+            --highlight-style=tango \
+            --wrap=preserve \
             -V geometry:a4paper \
             -V geometry:margin=2cm \
             -V fontsize=10pt \
+            -V linestretch=1.15 \
             -V mainfont="DejaVu Serif" \
             -V monofont="DejaVu Sans Mono" \
+            -V sansfont="DejaVu Sans" \
+            -V lang=en \
+            -V colorlinks=true \
+            -V linkcolor=blue \
+            -V urlcolor=blue \
             --metadata title="The Cybersecurity Command Reference" \
+            --metadata subtitle="Authorized Operator Edition — Volume I" \
             --metadata author="Ali Hazim" \
-            --metadata date="2026" \
+            --metadata date="v1.0.0 — 2026" \
             -o output/ccsr-v1.0.0.pdf
 
       - name: Upload PDF artifact

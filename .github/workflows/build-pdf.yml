@@ -62,7 +62,7 @@ jobs:
           pandoc \
             src/frontmatter/00-front.md \
             build/*.md \
-            --from markdown \
+            --from gfm \
             --to pdf \
             --pdf-engine=xelatex \
             --toc \

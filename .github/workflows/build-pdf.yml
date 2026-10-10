@@ -24,44 +24,97 @@ jobs:
             pandoc \
             texlive-xetex \
             texlive-latex-extra \
+            texlive-fonts-extra \
             fonts-dejavu \
             python3
 
       - name: Verify required files exist
         run: |
-          echo "Checking files..."
           test -f src/frontmatter/00-front.md || (echo "MISSING: src/frontmatter/00-front.md" && exit 1)
           test -f templates/header.tex || (echo "MISSING: templates/header.tex" && exit 1)
-          ls -la src/volume-1-linux-core/*.md
           echo "All required files present"
 
-      - name: Strip YAML frontmatter from entries
+      - name: Preprocess markdown
         run: |
           mkdir -p build
           python3 - << 'PYEOF'
-          import os, glob
+          import os, glob, re
+
           src_dir = 'src/volume-1-linux-core'
           out_dir = 'build'
           os.makedirs(out_dir, exist_ok=True)
-          for path in sorted(glob.glob(f'{src_dir}/*.md')):
-              with open(path, 'r', encoding='utf-8') as fp:
-                  content = fp.read()
+
+          def normalize_tables(text):
+              """Ensure every table pipe is surrounded by spaces so
+              Pandoc's GFM reader recognizes the table."""
+              lines = text.split('\n')
+              out = []
+              in_code = False
+              for line in lines:
+                  stripped = line.strip()
+                  if stripped.startswith('```'):
+                      in_code = not in_code
+                      out.append(line)
+                      continue
+                  if in_code:
+                      out.append(line)
+                      continue
+                  if stripped.startswith('|') and stripped.endswith('|') and len(stripped) > 2:
+                      # Normalize pipe spacing
+                      inner = stripped.strip('|')
+                      cells = [c.strip() for c in inner.split('|')]
+                      line = '| ' + ' | '.join(cells) + ' |'
+                      # Ensure separator rows have at least 3 dashes
+                      if all(re.fullmatch(r':?-{0,}:?', c) for c in cells if c):
+                          cells = [(':' if c.startswith(':') else '') + '-' * max(3, len(c)) + (':' if c.endswith(':') else '') for c in cells]
+                          line = '| ' + ' | '.join(cells) + ' |'
+                  out.append(line)
+              return '\n'.join(out)
+
+          def strip_frontmatter(content):
               if content.startswith('---'):
                   parts = content.split('---', 2)
                   if len(parts) >= 3:
-                      content = parts[2].lstrip('\n')
+                      return parts[2].lstrip('\n')
+              return content
+
+          for path in sorted(glob.glob(f'{src_dir}/*.md')):
+              with open(path, 'r', encoding='utf-8') as fp:
+                  content = fp.read()
+              content = strip_frontmatter(content)
+              content = normalize_tables(content)
               name = os.path.basename(path)
               with open(f'{out_dir}/{name}', 'w', encoding='utf-8') as fp:
                   fp.write(content)
-          print(f'Processed {len(os.listdir(out_dir))} files')
+
+          # Also preprocess the front matter file
+          fm_src = 'src/frontmatter/00-front.md'
+          if os.path.exists(fm_src):
+              with open(fm_src, 'r', encoding='utf-8') as fp:
+                  content = fp.read()
+              content = strip_frontmatter(content)
+              content = normalize_tables(content)
+              with open('build/00-front.md', 'w', encoding='utf-8') as fp:
+                  fp.write(content)
+
+          print(f'Preprocessed {len(glob.glob(f"{out_dir}/*.md"))} files')
           PYEOF
 
-      - name: Build PDF from entries
+      - name: Build PDF
         run: |
           mkdir -p output
           pandoc \
-            src/frontmatter/00-front.md \
-            build/*.md \
+            build/00-front.md \
+            build/001-pwd.md \
+            build/002-ls.md \
+            build/003-stat.md \
+            build/004-file.md \
+            build/005-less.md \
+            build/006-tail.md \
+            build/007-head.md \
+            build/008-wc.md \
+            build/009-cut.md \
+            build/010-sort.md \
             --from gfm \
             --to pdf \
             --pdf-engine=xelatex \
@@ -76,11 +129,10 @@ jobs:
             -V linestretch=1.15 \
             -V mainfont="DejaVu Serif" \
             -V monofont="DejaVu Sans Mono" \
+            -V sansfont="DejaVu Sans" \
             -V colorlinks=true \
-            -V linkcolor=ccsrAccent \
-            -V urlcolor=ccsrAccent \
             --metadata title="The Cybersecurity Command Reference" \
-            --metadata subtitle="Authorized Operator Edition — Volume I" \
+            --metadata subtitle="Authorized Operator Edition — Volume I: Linux Core Operations" \
             --metadata author="Ali Hazim" \
             --metadata date="v1.0.0 — 2026" \
             -o output/ccsr-v1.0.0.pdf
